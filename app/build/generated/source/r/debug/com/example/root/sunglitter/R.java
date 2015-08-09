@@ -1712,9 +1712,15 @@ containing a value of this type.
         public static final int action_settings=0x7f0d0011;
         public static final int app_name=0x7f0d0012;
         public static final int hello_world=0x7f0d0013;
-        public static final int status_bar_notification_info_overflow=0x7f0d0014;
-        public static final int title_activity_detail=0x7f0d0015;
-        public static final int title_activity_settings=0x7f0d0016;
+        public static final int pref_location_key=0x7f0d0014;
+        public static final int pref_location_title=0x7f0d0015;
+        public static final int pref_units_imperial=0x7f0d0016;
+        public static final int pref_units_key=0x7f0d0017;
+        public static final int pref_units_metric=0x7f0d0018;
+        public static final int pref_units_title=0x7f0d0019;
+        public static final int status_bar_notification_info_overflow=0x7f0d001a;
+        public static final int title_activity_detail=0x7f0d001b;
+        public static final int title_activity_settings=0x7f0d001c;
     }
     public static final class style {
         public static final int AlertDialog_AppCompat=0x7f0e0000;
