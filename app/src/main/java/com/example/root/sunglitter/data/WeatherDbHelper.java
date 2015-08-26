@@ -18,7 +18,6 @@ package com.example.root.sunglitter.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.location.Location;
 
 import com.example.root.sunglitter.data.WeatherContract.LocationEntry;
 import com.example.root.sunglitter.data.WeatherContract.WeatherEntry;
