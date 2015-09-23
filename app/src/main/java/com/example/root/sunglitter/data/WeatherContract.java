@@ -20,11 +20,13 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.format.Time;
+import android.util.Log;
 
 /**
  * Defines table and column names for the weather database.
  */
 public class WeatherContract {
+    private static final String LOG_TAG = WeatherEntry.class.getName();
 
     // The "Content authority" is a name for the entire content provider, similar to the
     // relationship between a domain name and its website.  A convenient string to use for the
@@ -83,6 +85,15 @@ public class WeatherContract {
 
         public static Uri buildLocationUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static long getIdFromUri(Uri uri) {
+            String idString = uri.getPathSegments().get(1);
+            Log.i(LOG_TAG, idString);
+            if (null != idString && idString.length() > 0)
+                return Long.parseLong(idString);
+            else
+                return -1;
         }
     }
 
