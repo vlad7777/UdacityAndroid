@@ -2,12 +2,14 @@ package com.example.root.sunglitter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.util.Log;
 
 import com.example.root.sunglitter.data.WeatherContract;
 
@@ -18,6 +20,11 @@ import com.example.root.sunglitter.data.WeatherContract;
 public class ForecastAdapter extends CursorAdapter {
     public ForecastAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
+        Log.i("ForecastAdapter", "The mTwoPanes is" + mTwoPanes);
+    }
+
+    public void setTwoPanes(boolean val) {
+        mTwoPanes = val;
     }
 
     public static final String[] FORECAST_COLUMNS = {
@@ -54,9 +61,11 @@ public class ForecastAdapter extends CursorAdapter {
     private static final int VIEW_TYPE_FUTURE_DAY = 1;
     private static final int VIEW_TYPE_COUNT = 2;
 
+    private boolean mTwoPanes = true;
+
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
+        return position == 0 && !mTwoPanes? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
     }
 
     @Override
@@ -104,6 +113,12 @@ public class ForecastAdapter extends CursorAdapter {
         viewHolder.dateView.setText(Utility.getFriendlyDayString(context, millis));
 
         viewHolder.descriptionView.setText(cursor.getString(COL_WEATHER_DESC));
+        int viewType = getItemViewType(cursor.getPosition());
+        if (viewType == VIEW_TYPE_TODAY)
+            viewHolder.iconView.setImageBitmap(BitmapFactory.decodeResource(view.getResources(), Utility.getArtResourceForWeatherCondition(cursor.getInt(COL_WEATHER_CONDITION_ID))));
+        else if (viewType == VIEW_TYPE_FUTURE_DAY)
+            viewHolder.iconView.setImageBitmap(BitmapFactory.decodeResource(view.getResources(), Utility.getIconResourceForWeatherCondition(cursor.getInt(COL_WEATHER_CONDITION_ID))));;
+
     }
 
     public static class ViewHolder {

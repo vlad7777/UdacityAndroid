@@ -108,6 +108,7 @@ public class WeatherContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_WEATHER;
 
+        public static final String BEFORE_MODIFIER = "before";
         public static final String TABLE_NAME = "weather";
 
         // Column with the foreign key into the location table.
@@ -153,6 +154,11 @@ public class WeatherContract {
             long normalizedDate = normalizeDate(startDate);
             return CONTENT_URI.buildUpon().appendPath(locationSetting)
                     .appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build();
+        }
+
+        public static Uri buildWeatherDeleteWithEndDate(long endDate) {
+            long normalizedDate = normalizeDate(endDate);
+            return CONTENT_URI.buildUpon().appendPath(BEFORE_MODIFIER).appendPath(Long.toString(normalizedDate)).build();
         }
 
         public static Uri buildWeatherLocationWithDate(String locationSetting, long date) {

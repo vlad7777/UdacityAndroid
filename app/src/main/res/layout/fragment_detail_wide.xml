@@ -1,0 +1,113 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.root.sunglitter.DetailActivityFragment"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/detail_date_textview"
+            android:textSize="24sp"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@android:color/black"
+            android:text="today"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/detail_date_textview2"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="#646464"
+            android:text="sooo today"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/detail_high_textview"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@android:color/black"
+            android:textSize="96sp"
+            android:text="42" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/detail_low_textview"
+            android:fontFamily="sans-serif-light"
+            android:textColor="#646464"
+            android:textSize="48sp"
+            android:text="-244"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/detail_humidity_textview"
+            android:text="much humid"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@android:color/black"
+            android:textSize="22sp"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/detail_wind_textview"
+            android:text="so wind"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@android:color/black"
+            android:textSize="22sp"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/detail_pressure_textview"
+            android:text="amazing"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@android:color/black"
+            android:textSize="22sp"
+            android:layout_marginBottom="4dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="144dp"
+            android:layout_height="144dp"
+            android:id="@+id/detail_icon"
+            android:src="@drawable/art_light_clouds"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/detail_description_textview"
+            android:text="Light Doge"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="#646464"
+            android:textSize="22sp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

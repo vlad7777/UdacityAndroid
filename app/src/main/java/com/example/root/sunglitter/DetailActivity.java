@@ -1,6 +1,7 @@
 package com.example.root.sunglitter;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -10,7 +11,7 @@ import android.support.v7.widget.ShareActionProvider;
 import android.support.v4.view.MenuItemCompat;
 
 
-public class DetailActivity extends ActionBarActivity {
+public class    DetailActivity extends ActionBarActivity {
 
     private static final String LOG_TAG = DetailActivity.class.getName();
 
@@ -21,8 +22,12 @@ public class DetailActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
+            String uriS = null;
+            Intent intent = getIntent();
+            if (intent != null && intent.getData() != null)
+                uriS = intent.getDataString();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailFragment())
+                    .add(R.id.weather_detail_container, DetailFragment.createInstance(Uri.parse(uriS)))
                     .commit();
         }
     }
@@ -50,7 +55,6 @@ public class DetailActivity extends ActionBarActivity {
 
     // Somewhere in the application.
     public void doShare(String data) {
-        Log.i("trying", "to share");
         Log.i("trying", "to share");
         // When you want to share set the share intent.
         Intent shareIntent = new Intent(Intent.ACTION_SEND);

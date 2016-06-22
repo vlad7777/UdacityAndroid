@@ -22,4 +22,11 @@
         android:entryValues="@array/unitsValues"
         android:defaultValue="@string/pref_units_metric"/>
 
+    <CheckBoxPreference
+        android:title="Notifications"
+        android:key="notifications"
+        android:defaultValue="true"
+        android:singleLine="true"
+        />
+
 </PreferenceScreen>

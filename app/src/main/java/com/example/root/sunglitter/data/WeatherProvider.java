@@ -23,6 +23,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
+
+import java.util.Calendar;
 
 public class WeatherProvider extends ContentProvider {
 
@@ -33,6 +36,7 @@ public class WeatherProvider extends ContentProvider {
     static final int WEATHER = 100;
     static final int WEATHER_WITH_LOCATION = 101;
     static final int WEATHER_WITH_LOCATION_AND_DATE = 102;
+    static final int WEATHER_BEFORE_DATE = 200;
     static final int LOCATION = 300;
 
     private static final SQLiteQueryBuilder sWeatherByLocationSettingQueryBuilder;
@@ -62,11 +66,21 @@ public class WeatherProvider extends ContentProvider {
                     "." + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
                     WeatherContract.WeatherEntry.COLUMN_DATE + " >= ? ";
 
+    private static final String sWeatherWithEndDateSelection =
+            WeatherContract.WeatherEntry.TABLE_NAME +
+                    "." + WeatherContract.WeatherEntry.COLUMN_DATE + " < ? ";
+
     //location.location_setting = ? AND date = ?
     private static final String sLocationSettingAndDaySelection =
             WeatherContract.LocationEntry.TABLE_NAME +
                     "." + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? AND " +
                     WeatherContract.WeatherEntry.COLUMN_DATE + " = ? ";
+
+    private int deleteWeatherBeforeDate(Uri uri) {
+        long endDate = WeatherContract.WeatherEntry.getDateFromUri(uri);
+        String[] args = new String[]{Long.toString(endDate)};
+        return mOpenHelper.getWritableDatabase().delete(WeatherContract.WeatherEntry.TABLE_NAME, sWeatherWithEndDateSelection, args);
+    }
 
     private Cursor getWeatherByLocationSetting(Uri uri, String[] projection, String sortOrder) {
         String locationSetting = WeatherContract.WeatherEntry.getLocationSettingFromUri(uri);
@@ -108,29 +122,31 @@ public class WeatherProvider extends ContentProvider {
         );
     }
 
-    private Cursor getWeather(Uri uri, String[] projection, String sortOrder) {
+    private Cursor getWeather(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         return mOpenHelper.getReadableDatabase().query(
                 WeatherContract.WeatherEntry.TABLE_NAME,
                 projection,
-                null,
-                null,
+                selection,
+                selectionArgs,
                 null,
                 null,
                 sortOrder
         );
     }
 
-    private Cursor getLocation(Uri uri, String[] projection, String sortOrder) {
+    private Cursor getLocation(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         return mOpenHelper.getReadableDatabase().query(
                 WeatherContract.LocationEntry.TABLE_NAME,
                 projection,
-                null,
-                null,
+                selection,
+                selectionArgs,
                 null,
                 null,
                 sortOrder
         );
     }
+
+
 
     /*
         Students: Here is where you need to create the UriMatcher. This UriMatcher will
@@ -146,10 +162,15 @@ public class WeatherProvider extends ContentProvider {
         // 2) Use the addURI function to match each of the types.  Use the constants from
         // WeatherContract to help define the types to the UriMatcher.
 
+        res.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_WEATHER + "/before/#", WEATHER_BEFORE_DATE);
         res.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_WEATHER, WEATHER);
         res.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_WEATHER + "/*" , WEATHER_WITH_LOCATION);
         res.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_WEATHER + "/*/#", WEATHER_WITH_LOCATION_AND_DATE);
-        res.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_LOCATION , LOCATION);
+        res.addURI(WeatherContract.CONTENT_AUTHORITY, WeatherContract.PATH_LOCATION, LOCATION);
+
+        //Log.i("AFDJO", WeatherContract.CONTENT_AUTHORITY + "/" + WeatherContract.PATH_WEATHER + "/delete/before/#");
+        //Uri uri = WeatherContract.WeatherEntry.buildWeatherDeleteWithEndDate(Calendar.getInstance().getTimeInMillis());
+        //Log.i("JUSTSDFOI", "" + res.match(uri) + " " + uri);
 
         // 3) Return the new matcher!
         return res;
@@ -175,6 +196,7 @@ public class WeatherProvider extends ContentProvider {
 
         // Use the Uri Matcher to determine what kind of URI this is.
         final int match = sUriMatcher.match(uri);
+        Log.i("match is equal", "" + match);
 
         switch (match) {
             // Student: Uncomment and fill out these two cases
@@ -185,6 +207,8 @@ public class WeatherProvider extends ContentProvider {
             case WEATHER:
                 return WeatherContract.WeatherEntry.CONTENT_TYPE;
             case LOCATION:
+                return WeatherContract.LocationEntry.CONTENT_TYPE;
+            case WEATHER_BEFORE_DATE:
                 return WeatherContract.LocationEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -211,12 +235,12 @@ public class WeatherProvider extends ContentProvider {
             }
             // "weather"
             case WEATHER: {
-                retCursor = getWeather(uri, projection, sortOrder);
+                retCursor = getWeather(uri, projection, selection, selectionArgs, sortOrder);
                 break;
             }
             // "location"
             case LOCATION: {
-                retCursor = getLocation(uri, projection, sortOrder);
+                retCursor = getLocation(uri, projection, selection, selectionArgs, sortOrder);
                 break;
             }
 
@@ -258,7 +282,7 @@ public class WeatherProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(returnUri, null);
         return returnUri;
     }
 
@@ -268,6 +292,11 @@ public class WeatherProvider extends ContentProvider {
 
         int res = 0;
 
+        Log.i("JFSDF", "JUST WORK ALREADY");
+        Log.i("TEST", WeatherContract.PATH_WEATHER + "/delete/before/#");
+
+        Log.i("wfewf", "" + sUriMatcher.match(uri));
+
         switch (sUriMatcher.match(uri)) {
             case WEATHER: {
                 res = db.delete(WeatherContract.WeatherEntry.TABLE_NAME, selection, selectionArgs);
@@ -275,6 +304,11 @@ public class WeatherProvider extends ContentProvider {
             }
             case LOCATION: {
                 res = db.delete(WeatherContract.LocationEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            }
+            case WEATHER_BEFORE_DATE: {
+                res = deleteWeatherBeforeDate(uri);
+                Log.i("WeatherProvider", "trying to delete " + uri.toString() + " deleted " + res);
                 break;
             }
             default:

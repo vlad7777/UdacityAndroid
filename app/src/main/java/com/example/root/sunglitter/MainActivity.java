@@ -1,32 +1,55 @@
 package com.example.root.sunglitter;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.root.sunglitter.sync.SunshineSyncAdapter;
 
-public class MainActivity extends ActionBarActivity {
+
+public class MainActivity extends ActionBarActivity implements ForecastFragment.Callback {
 
     public String FORECASTFRAGMENT_TAG = "FORECAST FRAGMENT";
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
     private static final String LOG_TAG = MainActivity.class.getName();
 
     private String mLocation;
+    private boolean mTwoPane = false;
+
+    @Override
+    public void onItemSelected(Uri uri) {
+        if (mTwoPane) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.weather_detail_container, DetailFragment.createInstance(uri)).commit();
+        } else {
+                Intent intent = new Intent(this, DetailActivity.class);
+                intent.setData(uri);
+                startActivity(intent);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.i("MainActivity", "onCreate");
-        mLocation = new String(Utility.getPreferredLocation(this));
-        if (savedInstanceState == null) {
-            Log.i(LOG_TAG, "Adding framgnet");
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.MainActivityContainer, new ForecastFragment(), FORECASTFRAGMENT_TAG)
-                    .commit();
+        mLocation = Utility.getPreferredLocation(this);
+        if (findViewById(R.id.weather_detail_container) != null) {
+            mTwoPane = true;
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.weather_detail_container, new DetailFragment(), DETAILFRAGMENT_TAG).commit();
+            }
+        } else {
+            mTwoPane = false;
+            //this.getSupportActionBar().setElevation(0f);
         }
+        ForecastFragment forecastFragment = (ForecastFragment)this.getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
+        forecastFragment.setmTwoPanes(mTwoPane);
+        SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
@@ -42,12 +65,16 @@ public class MainActivity extends ActionBarActivity {
         String curLocation = Utility.getPreferredLocation(this);
         Log.i(LOG_TAG, mLocation);
         Log.i(LOG_TAG, curLocation);
-        if (!mLocation.equals(curLocation))
+        if (curLocation != null && !mLocation.equals(curLocation))
         {
             Log.i(LOG_TAG, "Location change detected");
-            ForecastFragment ff = (ForecastFragment) getSupportFragmentManager().findFragmentByTag(FORECASTFRAGMENT_TAG);
-            ff.onLocationChanged();
+            ForecastFragment ff = (ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
+            ff.updateWeather();
             mLocation = curLocation;
+            DetailFragment df = (DetailFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+            if (null != df) {
+                df.onLocationChanged(mLocation);
+            }
         }
     }
 
@@ -88,6 +115,9 @@ public class MainActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (id == R.id.test_activity) {
+            startActivity(new Intent(this, Test.class));
             return true;
         }
 
